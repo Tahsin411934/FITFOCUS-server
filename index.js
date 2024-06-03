@@ -28,6 +28,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const TainerDB = client.db('Fitness-Tracker-Project').collection('trainer');
+    const RequestToBeTainerDB = client.db('Fitness-Tracker-Project').collection('RequestToBeTainer');
 
     app.get("/trainers",async(req,res)=>{
       const find= TainerDB.find()
@@ -47,7 +48,11 @@ async function run() {
       res.send(result)
     })
 
-
+    app.post("/RequestToBeTrainer",async(req,res)=>{
+      const requestToBeTrainer= req.body;
+      const result = await RequestToBeTainerDB.insertOne(requestToBeTrainer)
+      res.send(result)
+    })
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     
