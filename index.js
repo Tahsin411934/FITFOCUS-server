@@ -42,6 +42,12 @@ async function run() {
       const result = await TainerDB.findOne(quary)
       res.send(result)
     })
+
+    app.get("/RequestToBeTrainer", async(req,res)=>{
+      const find=RequestToBeTainerDB.find();
+      const result= await find.toArray()
+      res.send(result)
+    })
     app.post("/trainers", async(req,res)=>{
       const trainer = req.body;   
       const result = await TainerDB.insertOne(trainer)
