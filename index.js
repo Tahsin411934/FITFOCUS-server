@@ -83,32 +83,35 @@ async function run() {
     // get classes
     app.get("/NewClass", async (req, res) => {
       const find = NewClassDB.find()
-      const result = await find.toArray()
+      const result = await find.sort({ totalBook: -1 }).toArray()
       res.send(result)
     })
 
-
-    app.get("/RequestToBeTrainer", async (req, res) => {
-      const find = RequestToBeTainerDB.find();
-      const result = await find.toArray()
+    app.get("/NewClass/:className", async (req, res) => {
+      const className = req.params.className;
+      console.log(className)
+      const quary = { className: className }
+      const result = await NewClassDB.findOne(quary)
       res.send(result)
     })
-    app.get("/RequestToBeTrainer/:id", async (req, res) => {
-      const id = req.params.id;
-      const quary = { _id: new ObjectId(id) }
-      const result = await RequestToBeTainerDB.findOne(quary)
-      res.send(result)
-    })
+   
 
     app.get("/newsLatter", async (req, res) => {
       const find = NewsLatterDB.find()
       const result = await find.toArray()
       res.send(result)
     })
-
+// payment
     app.get("/payment", async (req, res) => {
       const find = PaymentDB.find()
       const result = await find.sort({ _id: -1 }).toArray()
+      res.send(result)
+    })
+    app.get("/payment/:class", async (req, res) => {
+      const Findclass = req.params.class;
+      
+      const quary = { class: Findclass }
+      const result = await PaymentDB.find(quary).toArray()
       res.send(result)
     })
 
@@ -174,10 +177,15 @@ async function run() {
     // Payment
     app.post("/payment", async (req, res) => {
       const Payment = req.body
-      const result = await PaymentDB.insertOne(Payment)
+     
+      
+      
+        const result = await PaymentDB.insertOne(Payment)
       res.send(result)
+      
+      
     })
-
+ 
 
 
     app.get('/trainers/classes/:className', async (req, res) => {
@@ -245,21 +253,26 @@ async function run() {
       const result = await userDB.updateOne(filter, updateDoc, options);
       res.send(result);
     })
-    app.put("/user/:email", async (req, res) => {
-      const email = req.params.email;
-      console.log(email)
-      const userData = req.body;
-      const filter = { email: email };
-      console.log(filter)
-      const options = { upset: true };
-      const updateDoc = {
-        $set: {
-          role: userData.role,
-        }
-      };
-      const result = await userDB.updateOne(filter, updateDoc, options);
-      res.send(result);
-    })
+ 
+     
+   app.put("/NewClass/:className", async (req, res) => {
+  const className = req.params.className; 
+  const totalBook = req.body.totalBook || 0; 
+  console.log(totalBook);
+
+  const filter = { className: className }; 
+  console.log(filter);
+
+  const options = { upsert: true }; 
+  const updateDoc = {
+    $set: {
+      totalBook: totalBook + 1, 
+    },
+  };
+
+  const result = await NewClassDB.updateOne(filter, updateDoc, options);
+  res.send(result);
+});
 
 
     app.delete("/trainers/:id/slots/:slot", async (req, res) => {
