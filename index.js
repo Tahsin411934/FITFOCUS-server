@@ -33,7 +33,10 @@ async function run() {
     const NewsLatterDB = client.db('Fitness-Tracker-Project').collection('NewsLatter');
     const NewClassDB = client.db('Fitness-Tracker-Project').collection('classes');
     const PaymentDB = client.db('Fitness-Tracker-Project').collection('paymentHistory');
+    const forumPosttDB = client.db('Fitness-Tracker-Project').collection('ForumPost');
 
+
+    // ALL GET METHOD
     app.get("/users", async (req, res) => {
       const find = userDB.find()
       const result = await find.toArray()
@@ -79,7 +82,15 @@ async function run() {
       const result = await TainerDB.findOne(quary)
       res.send(result)
     })
+    app.get('/trainers/classes/:className', async (req, res) => {
 
+      const className = req.params.className;
+      const trainers = await TainerDB.find({
+        'classes.value': className
+      }).toArray();
+      res.send(trainers);
+
+    });
     // get classes
     app.get("/NewClass", async (req, res) => {
       const find = NewClassDB.find()
@@ -122,6 +133,12 @@ async function run() {
       res.send(result)
     })
 
+// get forumPost
+    app.get("/forumPost", async (req, res) => {
+      const find = forumPosttDB.find()
+      const result = await find.sort({ _id: -1 }).toArray()
+      res.send(result)
+    })
 
     app.post("/users", async (req, res) => {
       const user = req.body;
@@ -174,12 +191,16 @@ async function run() {
       const result = await NewClassDB.insertOne(newClass)
       res.send(result)
     })
+    // add forum post
+    app.post("/forumPost", async (req, res) => {
+      const newClass = req.body;
+      const result = await forumPosttDB.insertOne(newClass)
+      res.send(result)
+    })
     // Payment
     app.post("/payment", async (req, res) => {
       const Payment = req.body
      
-      
-      
         const result = await PaymentDB.insertOne(Payment)
       res.send(result)
       
@@ -187,22 +208,14 @@ async function run() {
     })
  
 
-
-    app.get('/trainers/classes/:className', async (req, res) => {
-
-      const className = req.params.className;
-      const trainers = await TainerDB.find({
-        'classes.value': className
-      }).toArray();
-      res.send(trainers);
-
-    });
-
     app.post("/RequestToBeTrainer", async (req, res) => {
       const requestToBeTrainer = req.body;
       const result = await RequestToBeTainerDB.insertOne(requestToBeTrainer)
       res.send(result)
     })
+
+
+  // ALL UPDATE
 
     app.put("/trainers/:id", async (req, res) => {
       const id = req.params.id;
@@ -222,20 +235,20 @@ async function run() {
       res.send(result);
     });
 
-    app.put("/trainer/:id", async (req, res) => {
-      const id = req.params.id;
-      const trainerData = req.body;
-      const filter = { _id: new ObjectId(id) };
-      const updateDoc = {
-        $set: {
-          SlotTime: trainerData.SlotTime,
+    // app.put("/trainer/:id", async (req, res) => {
+    //   const id = req.params.id;
+    //   const trainerData = req.body;
+    //   const filter = { _id: new ObjectId(id) };
+    //   const updateDoc = {
+    //     $set: {
+    //       SlotTime: trainerData.SlotTime,
 
 
-        }
-      };
-      const result = await TainerDB.updateOne(filter, updateDoc);
-      res.send(result);
-    });
+    //     }
+    //   };
+    //   const result = await TainerDB.updateOne(filter, updateDoc);
+    //   res.send(result);
+    // });
 
 
     app.put("/users/:email", async (req, res) => {
@@ -274,38 +287,62 @@ async function run() {
   res.send(result);
 });
 
+app.put("/forumPost/:id", async (req, res) => {
+  const id = req.params.id;
+  console.log(id);
+  const userData = req.body;
+  const filter = { _id: new ObjectId(id) };
+  console.log(filter);
+  const options = { upsert: true };
+  const updateDoc = {
+    $set: {
+      totalUpvote: userData.totalUpvote,
+      message: userData.message,
+    },
+  };
+  const result = await forumPosttDB.updateOne(filter, updateDoc, options);
+  res.send(result);
+})
 
-    app.delete("/trainers/:id/slots/:slot", async (req, res) => {
-      const { id, slot } = req.params;
+// ALL DELETE
 
-      try {
-        // Fetch the trainer document
-        const trainer = await TainerDB.findOne({ _id: new ObjectId(id) });
 
-        if (!trainer) {
-          return res.status(404).json({ message: "Trainer not found" });
-        }
+    // app.delete("/trainers/:id/slots/:slot", async (req, res) => {
+    //   const { id, slot } = req.params;
 
-        // Filter out the slot
-        const updatedSlots = trainer.SlotTime.filter(s => s !== slot);
-        console.log(updatedSlots)
-        // Update the trainer's document
-        const result = await TainerDB.updateOne(
-          { _id: new ObjectId(id) },
-          { $set: { SlotTime: updatedSlots } }
-        );
+    //   try {
+    //     // Fetch the trainer document
+    //     const trainer = await TainerDB.findOne({ _id: new ObjectId(id) });
 
-        if (result.modifiedCount === 0) {
-          return res.status(404).json({ message: "Slot not found or already deleted" });
-        }
+    //     if (!trainer) {
+    //       return res.status(404).json({ message: "Trainer not found" });
+    //     }
 
-        res.json({ message: "Slot deleted successfully" });
-      } catch (error) {
-        console.error("Error deleting slot:", error);
-        res.status(500).json({ message: "Internal server error" });
-      }
-    });
+    //     // Filter out the slot
+    //     const updatedSlots = trainer.SlotTime.filter(s => s !== slot);
+    //     console.log(updatedSlots)
+    //     // Update the trainer's document
+    //     const result = await TainerDB.updateOne(
+    //       { _id: new ObjectId(id) },
+    //       { $set: { SlotTime: updatedSlots } }
+    //     );
 
+    //     if (result.modifiedCount === 0) {
+    //       return res.status(404).json({ message: "Slot not found or already deleted" });
+    //     }
+
+    //     res.json({ message: "Slot deleted successfully" });
+    //   } catch (error) {
+    //     console.error("Error deleting slot:", error);
+    //     res.status(500).json({ message: "Internal server error" });
+    //   }
+    // });
+    app.delete("/trainers/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await TainerDB.deleteOne(query);
+      res.send(result)
+  })
 
 
     app.delete("/trainers/:id/:slot", async (req, res) => {
