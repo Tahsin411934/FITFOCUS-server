@@ -9,14 +9,22 @@ const feature = require('./Features.json');
 
 
 // MIDDLEWARE
-
-app.use(cors());
+app.use(cors({
+  origin: ['fitness-tracker-project-a1fbd.web.app',
+    'http://localhost:5173',
+    'fitness-tracker-project-a1fbd.firebaseapp.com',
+    'https://assignment-12af.netlify.app'],
+  credentials: true
+}));
 app.use(express.json());
 
 
 
+
+
+
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const uri = "mongodb+srv://Fitness-Tracker-Project:0TkmXKHJoSThlXSD@cluster0.2vutuar.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.2vutuar.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -77,9 +85,7 @@ async function run() {
  
 
     app.get('/users/admin/:email', verifyAdmin, async (req, res) => {
-      console.log('check', req.params)
       const email = req.params.email;
-      console.log(req.headers)
       if (email !== req.decoded.email) {
         return res.status(403).send({ message: 'forbidden access' })
       }
@@ -111,8 +117,6 @@ async function run() {
  
     app.get("/users/:email", async (req, res) => {
       const email = req.params.email;
-      console.log(email)
-
       const quary = { email: email }
       const result = await userDB.findOne(quary)
       res.send(result)
@@ -127,7 +131,6 @@ async function run() {
     })
 
     app.get("/trainers/:id",verifyToken, async (req, res) => {
-      console.log(req.headers)
       const id = req.params.id;
       const quary = { _id: new ObjectId(id) }
       const result = await TainerDB.findOne(quary)
@@ -135,9 +138,7 @@ async function run() {
     })
 
     app.get("/trainer/:status1", async (req, res) => {
-      console.log(req.headers)
       const status1 = req.params.status1;
-      console.log(status1)
       const quary = { status: status1 }
       const result = await TainerDB.find(quary).toArray()
       res.send(result)
@@ -145,7 +146,6 @@ async function run() {
 
     app.get("/alltrainer/:email",verifyToken, async (req, res) => {
       const email = req.params.email;
-      console.log(email)
       const quary = { user_email: email }
       const result = await TainerDB.findOne(quary)
       res.send(result)
@@ -170,7 +170,6 @@ async function run() {
 
     app.get("/NewClass/:className", async (req, res) => {
       const className = req.params.className;
-      console.log(className)
       const quary = { className: className }
       const result = await NewClassDB.findOne(quary)
       res.send(result)
@@ -178,7 +177,6 @@ async function run() {
 
 
     app.get("/newsLatter",verifyToken, async (req, res) => {
-      console.log(req.headers)
       const find = NewsLatterDB.find()
       const result = await find.toArray()
       res.send(result)
@@ -206,7 +204,6 @@ async function run() {
     })
 
     app.get("/ckeckbooking/:email/:slotTime",verifyToken, async (req, res) => {
-      console.log(req.headers)
       const { email, slotTime } = req.params;
       const query = { trainerEmail: email, selectedSlot: slotTime };
       const result = await PaymentDB.find(query).toArray()
@@ -243,9 +240,7 @@ async function run() {
     app.post("/trainers",verifyToken, async (req, res) => {
       const trainer = req.body;
       const quary = { user_email: trainer.user_email }
-      console.log(quary)
       const existingtrainer = await TainerDB.findOne(quary)
-      console.log(existingtrainer)
       if (existingtrainer) {
         return res.send({ message: '0' })
       }
@@ -257,7 +252,6 @@ async function run() {
 
     app.post("/newsLatter", async (req, res) => {
       const subscriber = req.body;
-      console.log(subscriber.user_email)
       const quary = { user_email: subscriber.user_email }
       const existingSubscriber = await NewsLatterDB.findOne(quary)
       if (existingSubscriber) {
@@ -293,7 +287,6 @@ async function run() {
     })
     // Payment
     app.post("/payment",verifyToken, async (req, res) => {
-      console.log(req.headers)
       const Payment = req.body
 
       const result = await PaymentDB.insertOne(Payment)
@@ -332,7 +325,6 @@ async function run() {
 
     app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
-      console.log("user is", email)
       const UserData = req.body;
       const filter = { email: email };
       const updateDoc = {
@@ -365,10 +357,8 @@ async function run() {
 
     app.put("/users/:email",verifyToken, async (req, res) => {
       const email = req.params.email;
-      console.log(email)
       const userData = req.body;
       const filter = { email: email };
-      console.log(filter)
       const options = { upset: true };
       const updateDoc = {
         $set: {
@@ -383,11 +373,7 @@ async function run() {
     app.put("/NewClass/:className", async (req, res) => {
       const className = req.params.className;
       const totalBook = req.body.totalBook || 0;
-      console.log(totalBook);
-
       const filter = { className: className };
-      console.log(filter);
-
       const options = { upsert: true };
       const updateDoc = {
         $set: {
@@ -401,10 +387,8 @@ async function run() {
 
     app.put("/forumPost/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(id);
       const userData = req.body;
       const filter = { _id: new ObjectId(id) };
-      console.log(filter);
       const options = { upsert: true };
       const updateDoc = {
         $set: {
@@ -460,12 +444,12 @@ async function run() {
     app.delete("/trainers/:id/:slot", async (req, res) => {
       const id = req.params.id;
       const slot = req.params.slot;
-      console.log(id, slot)
+    
       const query = { _id: new ObjectId(id) };
-      console.log(query)
+    
       try {
         const trainer = await TainerDB.findOne(query);
-        console.log(typeof (trainer))
+        
         if (!trainer) {
           return res.status(404).json({ message: "Trainer not found" });
         }
@@ -486,7 +470,7 @@ async function run() {
       }
     });
 
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  
   } finally {
 
   }
