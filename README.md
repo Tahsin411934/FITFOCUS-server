@@ -23,7 +23,7 @@ Explore the live Fitness Tracker application, FITFOCUS, by visiting ![FITFOCUS L
 
 ## Introduction
 
-The Fitness Tracker Backend is designed to handle the core functionalities required by fitness applications. It allows users to sign up, book classes, make payments, and interact with trainers. This document provides a comprehensive guide on setting up, configuring, and using the backend system effectively.
+The FFITFOCUS Backend is designed to handle the core functionalities required by fitness applications. It allows users to sign up, book classes, make payments, and interact with trainers. This document provides a comprehensive guide on setting up, configuring, and using the backend system effectively.
 
 ## Features
 
@@ -66,9 +66,7 @@ The backend exposes several RESTful API endpoints for managing various aspects o
 
 - **POST /api/payments**: Process payments for booking classes.
 
-## Deployment
 
-Deploy the backend to a cloud platform such as Heroku or AWS Elastic Beanstalk. Ensure to set up environment variables securely in your deployment environment.
 
 ## Security
 
@@ -80,7 +78,7 @@ The backend implements robust security measures:
 
 ## Contributing
 
-Contributions to the Fitness Tracker Backend are welcome! Fork the repository, make improvements, and submit a pull request. Please adhere to the code of conduct and follow best practices for software development.
+Contributions to the FFITFOCUS Backend are welcome! Fork the repository, make improvements, and submit a pull request. Please adhere to the code of conduct and follow best practices for software development.
 
 ## License
 
