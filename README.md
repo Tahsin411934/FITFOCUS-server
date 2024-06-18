@@ -84,4 +84,4 @@ Contributions to the Fitness Tracker Backend are welcome! Fork the repository, m
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the Abrar Fahim Tahsin(abrarfahimtasin@gmail.com) License. fell free to contract
