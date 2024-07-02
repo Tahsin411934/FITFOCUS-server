@@ -2,7 +2,8 @@
 
 Welcome to the FFITFOCUS Backend repository! This backend system serves as the backbone for a comprehensive fitness tracking application, providing robust functionality to manage user data, fitness classes, payments, and more. Built using Node.js, Express, MongoDB, and integrated with Stripe for payment processing, this backend ensures seamless operation and scalability for your fitness platform.
 
-Explore the live Fitness Tracker application, FITFOCUS, by visiting ![FITFOCUS Live](https://assignment-12af.netlify.app/)
+Explore the live Fitness Tracker application, FITFOCUS, by visiting [FITFOCUS Live](https://assignment-12af.netlify.app/).
+
 
 
 ## Table of Contents
